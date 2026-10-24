@@ -66,12 +66,15 @@ Open the PDF files for reading and the matching `.tex` files for the LaTeX sourc
 ```text
 .
 ├── README.md
-├── IV-B.pdf
-├── IV-B.tex
-├── VII.pdf
-├── VII.tex
-├── VIII.pdf
-├── VIII.tex
+├── IV-B
+    └── IV-B.pdf
+    └── IV-B.tex
+├── VII
+    └── VII.pdf
+    └── VII.tex
+├── VIII
+    └── VIII.pdf
+    └── VIII.tex
 └── .github/
     └── workflows/
 ```
