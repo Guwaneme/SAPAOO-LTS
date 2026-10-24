@@ -1,0 +1,439 @@
+\documentclass[lettersize,journal]{IEEEtran}
+\usepackage{amsmath,amsfonts,amssymb}
+\usepackage{algorithmic}
+\usepackage{algorithm}
+\usepackage{array}
+\usepackage[caption=false,font=normalsize,labelfont=sf,textfont=sf]{subfig}
+\usepackage{textcomp}
+\usepackage{stfloats}
+\usepackage{url}
+\usepackage{verbatim}
+\usepackage{graphicx}
+\usepackage{color}
+% \usepackage{appendix}
+\usepackage{cite}
+\newcommand{\parab}[1]{\noindent\textbf{#1} }
+
+\hyphenation{op-tical net-works semi-conduc-tor IEEE-Xplore} 
+
+\begin{document}
+
+\appendices
+% Insert within the manuscript's existing appendix region.
+\section{Correctness and Parameter Analysis}
+\subsection{Correctness}
+\label{app:correctness-details}
+Let $
+\alpha=\frac{e^{1/5}}{\sqrt{2\pi}}.$
+Probabilities in this correctness analysis include the
+sampling of $(s,e)$ during key generation as well as preprocessing.
+We use the standard subgaussian norm bound for the ideal discrete-Gaussian
+samples and apply it directly to independent sums; no convolution is replaced
+by an exact spherical discrete Gaussian. {Concretely, for
+independent centered samples $x_k$ with subgaussian parameters $\sigma_k$, the
+coefficientwise moment-generating-function bound and independence give
+subgaussian parameter $(\sum_k\sigma_k^2)^{1/2}$ for $\sum_kx_k$; the standard
+vector-norm tail bound with
+$\alpha=\frac{e^{1/5}}{\sqrt{2\pi}}.$ and $N\geq16\lambda$ is at most
+$2^{-\lambda}$.} In particular, for
+$a=|\mathsf{act}|\leq a_{\max}$, except with probability at most
+$6\cdot2^{-\lambda}$, all six bounds
+\[
+\begin{gathered}
+\left\|\sum_jy_j\right\|_2
+\leq\alpha\sqrt{aN}\,\sigma_2,
+\qquad
+\left\|\sum_je'_j\right\|_2
+\leq\alpha\sqrt{aN}\,\sigma_2,\\
+\left\|\sum_jr_{j,1}\right\|_2,
+\left\|\sum_jr_{j,2}\right\|_2
+\leq\alpha\sqrt{aN}\,\sigma_r,\\
+\|s\|_2,\|e\|_2
+\leq\alpha\sqrt N\,\sigma_1
+\end{gathered}
+\]
+hold simultaneously when $N\geq16\lambda$. The indices in these sums range over
+$\mathsf{act}$. Since $\|c\|_1=\tau$, Young's inequality for negacyclic
+convolution gives
+\[
+\|sc\|_2\leq\tau\|s\|_2,
+\qquad
+\|ec\|_2\leq\tau\|e\|_2.
+\]
+This avoids treating $sc$ or $ec$ as an independent spherical Gaussian.
+
+To support every active set of size at most $a_{\max}$, define the conservative
+bounds
+\[
+\begin{aligned}
+\beta_z(a_{\max})
+&=
+\alpha\sqrt N
+\left(\sqrt{a_{\max}}\,\sigma_2+\tau\sigma_1\right),\\
+\beta_r(a_{\max})
+&=
+\alpha\sqrt{a_{\max}N}\,\sigma_r,\\
+\beta_{\widetilde e}(a_{\max})
+&=
+\alpha\sqrt N
+\left(
+\sqrt{a_{\max}}(\sigma_2+\sigma_r)
++\tau\sigma_1
+\right)
++\frac{q\tau}{2q_1}\sqrt N,\\
+\beta_\Delta(a_{\max})
+&=
+\frac{q_2}{q}\beta_{\widetilde e}(a_{\max})+\sqrt N.
+\end{aligned}
+\]
+The verifier uses
+$\beta_z=\beta_z(a_{\max})$,
+$\beta_r=\beta_r(a_{\max})$, and
+$\beta_\Delta=\beta_\Delta(a_{\max})$.
+
+For an honest execution, pairwise-mask cancellation and Shamir reconstruction
+give
+\[
+\begin{aligned}
+z
+&=
+\sum_{j\in\mathsf{act}}
+\left(y_j+\lambda_{\mathsf{act},j}s_jc+m_j\right)\\
+&=
+\sum_{j\in\mathsf{act}}y_j+sc,
+\qquad
+r=\sum_{j\in\mathsf{act}}r_{j,2}.
+\end{aligned}
+\]
+Let
+\[
+\eta_1
+=
+\widehat b-\mathsf{Lift}_1(b),
+\qquad
+\|\eta_1\|_\infty\leq\frac{q}{2q_1},
+\]
+and define the residual, using canonical centered representatives in
+$\mathcal M_q$, by
+\[
+\widetilde e
+=
+\sum_{j\in\mathsf{act}}(e'_j+r_{j,1})
++ec-\eta_1c.
+\]
+For
+$X=az+h_{\mathsf{sid}}r-\mathsf{Lift}_1(bc_{\mathbb Z})$, where the product
+is formed in $R_{q_1}$ before lifting, the honest aggregate token
+satisfies
+\[
+C_{\mathsf{act}}
+=
+\left\lfloor X+\widetilde e\right\rceil_{p_2}.
+\]
+The bounds above and
+$\|\eta_1c\|_2\leq(q\tau/(2q_1))\sqrt N$ imply
+$\|\widetilde e\|_2\leq\beta_{\widetilde e}(a_{\max})$. The modulus-switching
+difference bound then gives
+\[
+\|\Delta\|_2
+\leq
+\frac{q_2}{q}\|\widetilde e\|_2+\sqrt N
+\leq
+\beta_\Delta(a_{\max}).
+\]
+Finally, the definition of $\Delta$ yields
+\[
+C'
+=
+\Delta+\lfloor X\rceil_{p_2}
+=
+C_{\mathsf{act}},
+\]
+so the verifier recomputes the honest challenge.
+% BEGIN ROUTE A REVISION (2026-09-24)
+In this construction, at least one honest signer belongs to every admissible active
+set because $|\mathcal C|<t\leq|\mathsf{act}|$. A successful honest signing
+execution has therefore bound the exact context before its response
+collection completes. The persistent binding read matches the context
+reconstructed above. Hence the added check introduces no further
+cryptographic correctness error with the ideal available service.
+An implementation's probability of an unavailable or invalid read must be
+accounted for separately; correctness does not promise progress after
+adversarial burns that prevent a signing execution from completing.
+% END ROUTE A REVISION
+
+A union bound over the six
+displayed subgaussian events gives
+\[
+\varepsilon_{\mathsf{corr}}^{\mathsf{pt}}(\lambda)
+\leq
+6\cdot2^{-\lambda}+\varepsilon_{\mathsf{samp}}(\lambda),
+\]
+where $\varepsilon_{\mathsf{samp}}$ is the joint statistical distance of an
+implemented Gaussian sampler from the ideal samples and is zero in the ideal
+distributional model. In the pointwise bound, this joint distribution contains
+$(s,e)$ and all samples used by the fixed active set. In the uniform bound, it
+contains $(s,e)$ and the complete preprocessing family for every signer from
+which the active set may be selected. If only per-sample distances are
+available, $\varepsilon_{\mathsf{samp}}$ includes their composition over the
+corresponding batch. {A concrete implementation is
+required to make $\varepsilon_{\mathsf{samp}}(\lambda)$ negligible. This is a
+pointwise bound for each fixed admissible $\mathsf{act}$ chosen independently
+of the preprocessing randomness. For active-set selection after observing the
+public tokens, let
+\[
+S(n,t,a_{\max})
+=
+\sum_{a=t}^{a_{\max}}\binom{n}{a}.
+\]
+For each admissible $\mathsf{act}$, let
+$(\sigma_{\mathsf{act}},\mathcal B_{\mathsf{act}})$ be the result of an
+honest counterfactual execution from a separate copy of the same fresh
+post-preprocessing state, using the common sampled key and token family.
+Each copy binds only its own context. The event below means that every
+such choice would succeed if selected; only one choice is executed in the
+real protocol. A union bound on the Gaussian norm events before choosing
+the active set gives the uniform event
+\[
+\begin{aligned}
+&\Pr\!\left[
+\begin{array}{c}
+\forall\mathsf{act}\subseteq[n],\quad
+t\leq|\mathsf{act}|\leq a_{\max}:\\
+\mathsf{Vf}^{\mathcal B_{\mathsf{act}}}
+(\mathsf{vk},\mathsf{msg},\sigma_{\mathsf{act}})=1
+\end{array}
+\right]\\
+&\qquad\geq
+1-6S(n,t,a_{\max})2^{-\lambda}
+-\varepsilon_{\mathsf{samp}}(\lambda).
+\end{aligned}
+\]
+Thus adaptive post-preprocessing selection uses
+$\varepsilon_{\mathsf{corr}}^{\mathsf{unif}}
+\leq6S(n,t,a_{\max})2^{-\lambda}+\varepsilon_{\mathsf{samp}}$.
+The supported parameter regime must restrict $(n,t,a_{\max},N)$ so that the
+chosen pointwise or uniform error target is negligible.}
+\subsection{Parameter Analysis}
+\label{app:tt128r1-parameters}
+\paragraph{Inputs and conventions}
+We use $R_q=\mathbb Z_q[X]/(X^N+1)$, centered representatives, and
+$D_\sigma(x)\propto\exp(-\pi x^2/\sigma^2)$.
+% BEGIN RED TRAPDOOR CONVENTION REPAIR (2026-09-25)
+Every $\sigma$ in this profile, including
+$\sigma_{\mathsf{td}}$, denotes a Gaussian width. The corresponding
+standard-deviation parameter is $\sigma/\sqrt{2\pi}$.
+% END RED TRAPDOOR CONVENTION REPAIR
+Fix
+$n=t=a_{\max}=1024$, a challenge-query budget $Q=2^{60}$, and
+$\epsilon=2^{-320}$ for checking the smoothing and trapdoor inequalities.
+The statistical parameter does not itself certify the error of an
+implemented sampler. The revised prime modulus satisfies
+$q\equiv1\pmod{2N}$.
+\begin{center}
+\small
+\begin{tabular}{lc}
+\hline
+Parameter & TT-128-R1\\
+\hline
+$N$ & $4096$\\
+$q$ & $18014398509309953$\\
+$\tau$ & $32$\\
+$(\sigma_1,\sigma_2,\sigma_r)$ & $(2^6,2^{40},2^{31})$\\
+$\sigma_{\mathsf{td}}$ & $4349014$\\
+$(p_1,p_2)$ & $(38,42)$\\
+$(q_1,q_2)$ & $(65536,4096)$\\
+\hline
+\end{tabular}
+\end{center}
+Here $q_i=\lfloor q/2^{p_i}\rceil$ exactly. Although $p_1,p_2$ increase,
+the larger modulus gives larger compressed alphabets and thus less
+relative compression than the retired profiles.
+
+\paragraph{Exact verification thresholds}
+Use $\alpha=e^{1/5}/\sqrt{2\pi}$ and the preceding correctness formulas
+to obtain ideal bounds $\beta_z^{\rm ideal}$, $\beta_r^{\rm ideal}$,
+and $\beta_\Delta^{\rm ideal}$. Round their squares outwards:
+\[
+K_z=\lceil(\beta_z^{\rm ideal})^2\rceil,\quad
+K_r=\lceil(\beta_r^{\rm ideal})^2\rceil,\quad
+K_\Delta=\lceil(\beta_\Delta^{\rm ideal})^2\rceil.
+\]
+The exact constants are
+\[
+\begin{aligned}
+K_z&=1203919592477717581798617694083,\\
+K_r&=4592588776922465877528417,\\
+K_\Delta&=142861.
+\end{aligned}
+\]
+The verifier compares the integer squared norms with these integers.
+For this profile, use the actual radii
+$\beta_z=\sqrt{K_z}$, $\beta_r=\sqrt{K_r}$, and
+$\beta_\Delta=\sqrt{K_\Delta}$ throughout extraction. Numerically,
+\[
+\begin{aligned}
+\beta_z&\simeq1.097232697506649\cdot10^{15},\\
+\beta_r&\simeq2.143032612192933\cdot10^{12},\\
+\beta_\Delta&\simeq377.9695754952.
+\end{aligned}
+\]
+Substituting these actual radii into the complete extraction formula gives
+\[
+\begin{aligned}
+\beta_\delta&\simeq4.169080475712151\cdot10^{15},\\
+\beta_{\mathsf{SIS}}&\simeq4.711361666570529\cdot10^{15}\\
+&\simeq0.2615331099806451q<(q-1)/2.
+\end{aligned}
+\]
+This removes the previous universal public-column short-solution
+obstruction; it does not prove normalized ring-SIS hardness.
+
+\paragraph{Strict width checks and correctness}
+We use the strict Hint-RLWE relation in TalonG's Theorem 1, retaining
+$\tau^2$ rather than replacing the relaxed asymptotic factor by one:
+\[
+\sigma=\left(\frac{2}{\sigma_1^2}
+               +\frac{2Q\tau^2}{\sigma_2^2}\right)^{-1/2}
+\simeq20.2385770251.
+\]
+A sufficient upper bound on $\sqrt2\eta_\epsilon(\mathbb Z^N)$ is
+$\sqrt{2\ln(2N(1+1/\epsilon))/\pi}\simeq12.1220175590$.
+The selected ephemeral and preimage widths satisfy
+\[
+\begin{aligned}
+\sigma_2&>2\sqrt N q^{1/2+1/N}
+                 \simeq1.7337581266\cdot10^{10},\\
+\sigma_r&>1.17\sqrt q\sqrt{\ln(4N(1+1/\epsilon))/\pi}
+                 \simeq1.3480523948\cdot10^9.
+\end{aligned}
+\]
+% BEGIN RED TRAPDOOR CONVENTION REPAIR (2026-09-25)
+The second inequality is sufficient for the cited smoothing
+bound only when the generated trapdoor satisfies
+$\|\widetilde B\|_{\mathsf{GS}}\leq1.17\sqrt q$.
+Falcon's sampling choice $1.17\sqrt{q/(2N)}$ uses a standard-deviation
+parameter, whereas this profile uses Gaussian widths~\cite{FalconSpecV12}.
+The corresponding width and our rounded candidate are
+\[
+\begin{aligned}
+\sigma_{\mathsf{td}}^{\mathsf{Falcon}}
+&=\sqrt{2\pi}\,1.17\sqrt{q/(2N)}\\
+&\simeq4349013.011830253,\\
+\sigma_{\mathsf{td}}
+&=\left\lceil\sigma_{\mathsf{td}}^{\mathsf{Falcon}}\right\rceil
+=4349014.
+\end{aligned}
+\]
+This conversion replaces the former width $1735006$; it is not a
+universal trapdoor-width lower bound or a proof that a particular
+$\mathsf{TDGen}$ is efficient. At the chosen $(N,q)$, the generator must
+still establish its acceptance probability, Gram--Schmidt bound, and
+public-key distribution, and $\mathsf{Pre}$ must establish its conditional
+sampling guarantee. Correcting $\sigma_{\mathsf{td}}$ does not change
+$\sigma_1,\sigma_2,\sigma_r$ or the displayed correctness and extraction
+radii. In particular, $\sigma_r$ is not rescaled mechanically.
+% END RED TRAPDOOR CONVENTION REPAIR
+These scalar inequalities and the verification thresholds are numerical
+checks, not a certification of those trapdoor guarantees.
+Since $n=t=a_{\max}$, the active-set union factor is one.
+The six-event ideal correctness tail is at most
+\[
+6\exp\!\left(N\left[\frac15+
+                 \frac{1-e^{2/5}}2\right]\right)
+\simeq2^{-268.72391}
+\]
+per signing execution, plus the joint sampler error for that execution.
+This is not an experiment-wide sampler-error bound.
+
+\paragraph{Estimator results and their scope}
+We ran the unmodified Lattice Estimator at commits
+\texttt{5ba00f5} (the supplied TalonG reference) and
+\texttt{53da598} (a second version check), using SageMath 10.9,
+the classical MATZOV model, and the explicit \texttt{gsa} shape model.
+Gaussian widths are converted to standard deviations by division by
+$\sqrt{2\pi}$.
+% BEGIN RED TRAPDOOR ESTIMATE WITHDRAWAL (2026-09-25)
+The LWE and SIS inputs are unchanged by the trapdoor-width
+correction, so their recorded outputs below are retained. The NTRU run
+would use the corrected standard-deviation parameter
+$4349014/\sqrt{2\pi}$, together with an analysis of the screened key
+distribution defined below. We defer this numerical evaluation. The
+conditional theorem retains the screened-key indistinguishability
+assumption; deferring an attack-cost estimate does not discharge it.
+% END RED TRAPDOOR ESTIMATE WITHDRAWAL
+The generic coefficient-lattice mappings are
+LWE $(n,m)=(N,N)$, Euclidean SIS $(n,m)=(N,4N)$, and circulant
+NTRU $(n,m)=(N,N)$. These mappings are heuristic for the structured ring
+instances used here, including normalized ring-SIS.
+\begin{center}
+\small
+\begin{tabular}{lcc}
+\hline
+Problem & MATZOV bits & BKZ block\\
+\hline
+Hint-RLWE (BDD) & $301.11$ & $956$\\
+SIS (full bound) & $299.04$ & $949$\\
+NTRU (uSVP) & not evaluated & ---\\
+\hline
+\end{tabular}
+\end{center}
+The first two rows are the lowest finite, usable outputs in the recorded
+MATZOV runs for those problems. With the classical ADPS16 model,
+LWE uSVP costs $2^{280.904}$ and SIS costs $2^{277.108}$.
+These are model-specific work estimates, not bounds on distinguishing
+advantage.
+% BEGIN RED TRAPDOOR ESTIMATE WITHDRAWAL (2026-09-25)
+The former NTRU estimate of $971.24$ bits at block size $3335$
+used the superseded trapdoor-width input and was also an extrapolation
+beyond the fitted block-size range. It is withdrawn for this corrected
+profile. Other recorded NTRU calls encountered model limits or returned
+non-finite outputs.
+% END RED TRAPDOOR ESTIMATE WITHDRAWAL
+The recorded BKW call failed numerically. All diagnostics are retained in the
+reproducibility package; a failed call or infinite output does not certify
+security or establish the minimum over all attacks.
+
+% BEGIN BLUE HEURISTIC-SCOPE CLARIFICATION (2026-09-25)
+\paragraph{Interpretation of heuristic estimates}
+The cost models and generic coefficient-lattice mappings above are used
+as explicitly heuristic evidence about known attacks. They are not
+claimed as proven lower bounds against all algorithms. Such estimates
+can guide a candidate parameter choice without a tight concrete security
+reduction, provided that the instance distribution, attack coverage,
+cost model, and extrapolations are stated. In contrast, simulation
+identities, extraction bounds, and statistical-distance composition in
+the conditional theorem require mathematical justification. An
+unproved primitive property must be identified as an assumption rather
+than inferred from a favorable estimator output. In particular, the
+omitted NTRU estimate leaves this profile without a complete numerical
+assessment of all assumptions used by the proof.
+% END BLUE HEURISTIC-SCOPE CLARIFICATION
+
+\paragraph{Additional screens and communication}
+The challenge entropy is
+$\tau+\log_2\binom N\tau\simeq298.1615854$ bits. The correction radius
+is strictly below $(q_2/2)\sqrt N$. For only the fresh, uniform-$C$,
+$z=r=0$ strategy with a fresh challenge-oracle input, the finite-alphabet Chernoff bound is
+less than $2^{-30272}$ per trial. This does not bound a fixed or
+adversarially selected $C$, or general forgeries.
+Simple fixed-width encoding uses 51, 42, and 10 bits per coefficient
+of $z,r,\Delta$, respectively. Their total is 52,736 bytes (51.5 KiB),
+excluding the challenge and metadata. Encoding full $a$ and compressed
+$b$ takes 35 KiB; one uncompressed public token polynomial takes 27 KiB.
+A canonical sparse challenge representation takes 52 bytes. These are
+encoding budgets, not measured protocol bandwidth or runtime results.
+
+\paragraph{Remaining proof and implementation obligations}
+The state-assisted theorem eliminates $E_1$ in the ideal service model,
+but its $E_0$ term still incurs label-guessing and forking losses. No
+end-to-end 128-bit claim follows from the estimator outputs alone. Such
+a concrete claim requires explicit experiment-wide budgets, including
+$L,T$, PRF and sampler errors, supported primitive advantage bounds,
+and a realization of the trusted service. A trapdoor implementation must supply the required guarantees at
+this modulus and dimension. Changing the supported participant sets,
+query budget, or widths requires recomputation of both correctness and
+security conditions.
+% END RED REVISED PARAMETERS
+
+\end{document}
