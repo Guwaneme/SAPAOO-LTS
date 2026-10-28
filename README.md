@@ -2,79 +2,68 @@
 
 ## State-Assisted Preprocessing-Aware Offline-Online Lattice-Based Threshold Signatures
 
-**Authors:** Mengqi Feng, Runze Zhao, Fanqi Kong, Xiaofei Yue, Zhaoxuan Li, Ziming Zhao, and Jianwei Yin.
+**Authors:** Mengqi Feng, Runze Zhao, Fanqi Kong, Zhaoxuan Li, and Ziming Zhao.
 
-This repository provides the supplementary security definitions, correctness and parameter analysis, and full security proofs for the manuscript. The documents expand the corresponding sections of the main paper and are available as both PDF documents and LaTeX sources.
+This repository contains the extended security definitions, correctness and parameter analysis, and security proofs supporting the main paper. The materials are organized by section title and are provided as PDF documents and matching LaTeX sources.
 
 ## Documents
 
-File names follow the section numbering of the main paper.
-
-| Main-paper section | Supplementary document | PDF | LaTeX source |
+| Main-paper section | Supplement | PDF | LaTeX source |
 | --- | --- | --- | --- |
-| IV-B | Full Preprocessing-Aware Security Experiment | [IV-B.pdf](IV-B.pdf) | [IV-B.tex](IV-B.tex) |
-| VII | Correctness and Parameter Analysis | [VII.pdf](VII.pdf) | [VII.tex](VII.tex) |
-| VIII | Security Proofs, including Screened Trapdoor Generation and Conditional Sampling | [VIII.pdf](VIII.pdf) | [VIII.tex](VIII.tex) |
+| III. Security Definitions, particularly III-B | Full preprocessing-aware security experiment | [Security Definitions.pdf](Security%20Definitions/Security%20Definitions.pdf) | [Security Definitions.tex](Security%20Definitions/Security%20Definitions.tex) |
+| VI. Correctness and Security Proofs | Correctness, parameter analysis, full security proofs, and supporting trapdoor and sampling analysis | [Correctness and Security Proofs.pdf](Correctness%20and%20Security%20Proofs/Correctness%20and%20Security%20Proofs.pdf) | [Correctness and Security Proofs.tex](Correctness%20and%20Security%20Proofs/Correctness%20and%20Security%20Proofs.tex) |
 
 ## Contents
 
-### Section IV-B: Full Preprocessing-Aware Security Experiment
+### Security Definitions
 
-This document specifies the complete experiment underlying the security definitions in the main paper:
+The [Security Definitions](Security%20Definitions/) supplement expands the preprocessing-aware security model in Section III-B:
 
-- The ideal public binding service, persistent context bindings, and authenticated, linearizable binding reads.
-- The adversary, token-generation, response, binding-read, and burn oracles.
-- Identifier lifecycle rules, atomic response generation and token consumption, and private-state erasure.
-- The terminal-state convention and definitions of context authorization and identifier completion.
-- Adaptive-message security, one-time-token security, and their combined preprocessing-aware unforgeability notion.
+- The ideal public binding service and its authenticated, linearizable binding-read interface.
+- The adversary, random oracles, token-generation and response queries, public binding reads, and identifier burning.
+- Atomic state transitions, one-time token consumption, private-state erasure, and persistent context bindings.
+- Terminal-state evaluation, context authorization, identifier completion, and the adaptive-message, one-time-token, and combined preprocessing-aware winning events.
 
-### Section VII: Correctness and Parameter Analysis
+### Correctness and Security Proofs
 
-This document supplies the detailed correctness derivations and parameter checks:
+The [Correctness and Security Proofs](Correctness%20and%20Security%20Proofs/) supplement expands Section VI:
 
-- Subgaussian norm bounds for independent sums, pairwise-mask cancellation, and Shamir reconstruction.
-- Rounding-error analysis, verification thresholds, and reconstruction of the honest aggregate and challenge.
-- Pointwise correctness for a fixed active set and uniform correctness for active-set selection after observing public tokens.
-- Composition of implemented sampling errors over the relevant joint sampling distribution.
-- The illustrative TT-128-R1 parameter profile, extraction bounds, width checks, encoding budgets, and heuristic attack-cost estimates.
-- The scope of those estimates and the remaining proof and implementation obligations.
+- **VI-A: Correctness.** Detailed norm and rounding bounds, honest reconstruction, and pointwise and uniform correctness for admissible active sets.
+- **VI-B: Illustrative Parameter Profile for Tokenized TalonG.** Verification thresholds, width checks, extraction and encoding bounds, and the interpretation of heuristic attack-cost estimates.
+- **VI-C: Security of the Abstract Framework.** State invariants and exclusion of incompatible-context acceptance under the ideal binding service.
+- **VI-D: Security of the Tokenized Talon Instantiation.** Aggregate-equivalent views, partial honest responses, incomplete-context security, fixed-input extraction with scaled lifting, and the resulting state-assisted security bound.
+- **Supporting analysis.** Screened trapdoor generation, conditional preimage sampling, and composition of generation and sampling errors across keys and tokens.
 
-### Section VIII: Security Proofs and Supporting Sampling Analysis
+## Model and Scope
 
-This document combines the material previously presented in Appendices C and D.
+The security claims are conditional on the cryptographic, generation, and sampling assumptions stated in the paper and supplements. The model uses static corruption, classical random-oracle access, reliable erasure, and an ideal trusted binding service with persistent bindings and authenticated, linearizable, rollback-protected reads. A concrete service implementation requires its own realization argument.
 
-**Security proofs** cover the state invariant, exclusion of incompatible-context acceptance, aggregate-equivalent views, the mask distribution and partial responses, incomplete-context security, fixed-input extraction with scaled lifting, and the final state-assisted preprocessing-aware security theorem.
-
-**Trapdoor and sampling analysis** specifies screened trapdoor generation and its output distribution, conditional preimage sampling for every target, statistical-distance bounds, and error composition over multiple keys and tokens. It also states the generation and screened-key assumptions, together with the Hint-RLWE and normalized ring-SIS assumptions used by the security argument. The trapdoor algorithms serve the reduction; they are not invoked by the honest protocol algorithms.
-
-## Security Model and Scope
-
-The security analysis is conditional on the stated cryptographic and sampling assumptions. Its model uses **static corruption, classical random-oracle access, reliable erasure, and an ideal trusted binding service** with authenticated, linearizable, rollback-protected reads and persistent bindings. A concrete service implementation requires a separate realization argument.
+The TT-128-R1 parameter profile supplies illustrative checks and heuristic estimates. Those estimates alone do not establish an end-to-end 128-bit security claim. The trapdoor algorithms support the reduction; the honest protocol algorithms do not invoke them.
 
 ## Reading Guide
 
-Read these documents alongside the corresponding sections of the main paper:
+1. Read Section III of the main paper together with **Security Definitions** for the full experiment and state semantics.
+2. Read Sections VI-A and VI-B together with the correctness and parameter-analysis part of **Correctness and Security Proofs**.
+3. Read Sections VI-C and VI-D together with the security-proof and sampling-analysis part of the same supplement.
 
-1. **IV-B** for the full experiment, oracle interfaces, and state semantics.
-2. **VII** for correctness bounds and the interpretation of candidate parameters.
-3. **VIII** for the full security arguments and their supporting trapdoor and sampling conditions.
-
-Open the PDF files for reading and the matching `.tex` files for the LaTeX sources. The [`.github/workflows`](.github/workflows/) directory contains the repository's PDF build workflow configuration.
+The PDFs are intended for reading; the `.tex` files provide the corresponding sources. Section and equation references explicitly identified as belonging to the main paper refer to that paper, rather than to the local numbering of a supplement.
 
 ## Repository Layout
 
 ```text
 .
 ├── README.md
-├── IV-B
-    └── IV-B.pdf
-    └── IV-B.tex
-├── VII
-    └── VII.pdf
-    └── VII.tex
-├── VIII
-    └── VIII.pdf
-    └── VIII.tex
+├── Security Definitions/
+│   ├── README.md
+│   ├── Security Definitions.pdf
+│   └── Security Definitions.tex
+├── Correctness and Security Proofs/
+│   ├── README.md
+│   ├── Correctness and Security Proofs.pdf
+│   └── Correctness and Security Proofs.tex
 └── .github/
     └── workflows/
+        └── latex.yml
 ```
+
+The GitHub Actions workflow builds both supplementary documents and uploads the resulting PDFs as workflow artifacts.
